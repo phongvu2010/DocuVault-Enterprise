@@ -1,0 +1,31 @@
+services:
+  # Dịch vụ Backend (FastAPI)
+  jarvis-api:
+    build: ./backend
+    container_name: jarvis_obsidian_api
+    ports:
+      - "8000:8000"
+    environment:
+      - OBSIDIAN_VAULT_PATH=${VAULT_PATH}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    volumes:
+      # [QUAN TRỌNG] Mount thư mục Obsidian Vault từ máy chủ vào container
+      # Cú pháp: <Đường_dẫn_tuyệt_đối_hoặc_tương_đối_trên_máy_chủ>:<Đường_dẫn_trong_container>
+      # Khuyến nghị dùng đường dẫn tương đối để dễ di chuyển thư mục dự án
+      - ./vault:${VAULT_PATH}
+      # Mount Docker Socket để Jarvis quản lý được các container trên máy chủ
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
+
+  # Dịch vụ Frontend (Node.js / React)
+  jarvis-web:
+    build: ./frontend
+    container_name: jarvis_obsidian_web
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - jarvis-api
+    restart: unless-stopped
