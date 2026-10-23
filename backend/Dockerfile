@@ -9,13 +9,13 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy toàn bộ mã nguồn vào container
-COPY jarvis_obsidian_api.py .
+COPY . .
 
 # Tạo sẵn một thư mục rỗng để làm điểm mount cho Docker Volume
-RUN mkdir -p /Jarvis-Memory
+RUN mkdir -p /DocuVault-Memory
 
 # Mở port 8000 cho FastAPI
 EXPOSE 8000
 
 # Lệnh khởi chạy server uvicorn
-CMD ["uvicorn", "jarvis_obsidian_api:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
